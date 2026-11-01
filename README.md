@@ -60,7 +60,7 @@ Berikut merupakan penjelasan fungsi dari masing-masing file dalam repository:
 
 4. **style.css** merupakan file yang digunakan untuk mengatur tampilan visual dari index.html, meliputi warna, tata letak, ukuran font, dan elemen desain lainnya.
 
-5. **script.js** merupakan file JavaScript dari sisi frontend yang digunakan untuk memberikan interaksi dan mengatur fungsi pada halaman web.
+5. **script.js** merupakan file JavaScript yang digunakan untuk memberikan interaksi dan mengatur fungsi pada halaman web, meliputi navigasi antarhalaman tanpa reload, autentikasi akun melalui backend PHP, pengendalian motor 8 arah dan mode lontaran melalui REST API ESP32, serta pengambilan data untuk pemantauan parameter QoS jaringan seperti latency, packet loss, bandwidth, dan jitter.
 
 6. **api.php** merupakan endpoint backend utama yang menangani logika REST API, seperti autentikasi login dan registrasi, sesi latihan, pengaturan sistem, serta proses lainnya.
 
