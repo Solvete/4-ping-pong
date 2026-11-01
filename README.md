@@ -2,7 +2,7 @@
 atau disebut juga **Ping-Pong-Machine** adalah proyek PBL kelompok 4 kelas TMJ 5A.
 
 **ESP32-2** atau ESP2 adalah kode ino yang berfungsi dalam mengatur mesin ping pong itu sendiri, seperti servo, gearbox, relay, dan lainnya.\
-**index.html** adalah file utama yang menampilkan seluruh antarmuka visual ke layar pengguna, mulai dari login, kontrol hingga pemantauan QoS.\
+**index.html** adalah file utama yang menampilkan seluruh antarmuka visual ke layar pengguna, mulai dari login, kontrol hingga pemantauan QoS
 
 # Authors
 - [Arini](https://github.com/arinisalsa)
