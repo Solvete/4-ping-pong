@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Robot Pelontar - Tenis Meja</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="app-container">
+
+            <!-- Untuk login -->
+            <section id="login-page" class="hidden">
+                <div class="card">
+                    <h2>Login Pengguna</h2>
+
+                    <div class="input-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" placeholder="">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-row">
+                            <label for="login-password">Password</label>
+                            <a href="#" id="link-forgot">Lupa Password</a>
+                        </div>
+                        <input type="password" id="login-password" placeholder="">
+                    </div>
+                    <button class="btn-black" id="btn-submit-login">Login</button>
+
+                    <!-- Buat ke regis -->
+                    <div class="inner-card">
+                        <h3>Belum Punya Akun?</h3>
+                        <p class="subtitle">Lakukan Registrasi Akun Di Sini</p>
+                        <button class="btn-outline" id="btn-to-register">Registrasi Akun</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Untuk Regis -->
+            <section id="register-page" class="hidden">
+                <div class="card">
+                    <h2>Registrasi Akun Baru</h2>
+
+                    <div class="input-group">
+                        <label for="reg-username">Username</label>
+                        <input type="text" id="reg-username" placeholder="">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" placeholder="">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-confirm-password">Konfirmasi Password</label>
+                        <input type="password" id="reg-confirm-password" placeholder="">
+                    </div>
+        
+                    <button class="btn-black" id="btn-submit-register">Daftar Sekarang</button>
+
+                    <div class="inner-card">
+                        <h3>Sudah Punya Akun?</h3>
+                        <p class="subtitle">Masuk menggunakan akun yang sudah terdaftar</p>
+                        <button class="btn-outline" id="btn-to-login">Kembali ke Login</button>
+                    </div>
+                </div>
+            </section>
+
+           <!-- Untuk lupa pw (Multi-step Verification) -->
+            <section id="forgot-page" class="hidden">
+                <div class="card">
+                    <h2>Atur Ulang Password</h2>
+                    
+                    <!-- Form Tahap 1: Verifikasi User -->
+                    <div id="forgot-step-1">
+                        <div class="input-group" style="margin-bottom: 20px;">
+                            <label for="forgot-username">Username</label>
+                            <input type="text" id="forgot-username" placeholder="Masukkan username">
+                        </div>
+                        <button class="btn-black" id="btn-submit-verify">Verifikasi Akun</button>
+                    </div>
+
+                    <!-- Form Tahap 2: Input Password Baru -->
+                    <div id="forgot-step-2" class="hidden" style="margin-top: 15px;">
+                        <div class="status-badge" style="margin-bottom: 20px; background: #e6fffa; color: #047857; text-align: center; padding: 10px;">
+                            ✓ User Terverifikasi
+                        </div>
+
+                        <div class="input-group" style="margin-bottom: 16px;">
+                            <label for="forgot-new-password">Password Baru</label>
+                            <input type="password" id="forgot-new-password" placeholder="Masukkan password baru">
+                        </div>
+
+                        <div class="input-group" style="margin-bottom: 24px;">
+                            <label for="forgot-confirm-password">Konfirmasi Password Baru</label>
+                            <input type="password" id="forgot-confirm-password" placeholder="Ulangi password baru">
+                        </div>
+
+                        <button class="btn-black" id="btn-submit-reset-pw" style="margin-bottom: 10px;">Simpan Password Baru</button>
+                    </div>
+
+                    <div class="inner-card">
+                        <h3>Batal Atur Ulang?</h3>
+                        <p class="subtitle">Kembali ke halaman masuk</p>
+                        <button class="btn-outline" id="btn-forgot-to-login">Kembali ke Login</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Untuk kontrol (Header dimasukkan ke dalam section kontrol) -->
+            <section id="control-page">
+                <header class="header">
+                    <div>
+                        <h1>Robot Pelontar</h1>
+                        <p>Alat Latihan Tenis Meja</p>
+                    </div>
+                    <div class="status-badge">
+                        <span class="dot"></span> Terhubung
+                    </div>
+                </header>
+
+                <div class="card">
+                    <h3>Mode Latihan</h3>
+                    <div class="select-wrapper">
+                        <select id="modeSelect">
+                            <option value="easy">Level 1 - Pemula</option>
+                            <option value="medium">Level 2 - Menengah</option>
+                            <option value="hard">Level 3 - Mahir</option>
+                            <option value="custom" sclass="hidden"elected>Custom</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Arah Gerak</h3>
+                    <div class="dpad-container">
+                        <!-- Baris Atas (Kiri-Atas, Atas, Kanan-Atas) -->
+                        <div class="dpad-row">
+                            <button class="btn-dpad" id="btnUpLeft">◤</button>
+                            <button class="btn-dpad" id="btnUp">▲</button>
+                            <button class="btn-dpad" id="btnUpRight">◥</button>
+                        </div>
+                        <!-- Baris Tengah (Kiri, Tombol Tengah, Kanan) -->
+                        <div class="dpad-row">
+                            <button class="btn-dpad" id="btnLeft">◀</button>
+                            <button class="btn-dpad center-target" id="btnCenter">
+                                <span class="target-icon"></span>
+                            </button>
+                            <button class="btn-dpad" id="btnRight">▶</button>
+                        </div>
+                        <!-- Baris Bawah (Kiri-Bawah, Bawah, Kanan-Bawah) -->
+                        <div class="dpad-row">
+                            <button class="btn-dpad" id="btnDownLeft">◣</button>
+                            <button class="btn-dpad" id="btnDown">▼</button>
+                            <button class="btn-dpad" id="btnDownRight">◢</button>
+                        </div>
+                    </div>
+
+                    <button class="btn-outline" id="btnResetPos">
+                        ↺ Ulang ke Posisi Awal
+                    </button>
+
+                    <div class="inner-card">
+                        <h4>Randomizer Pergerakan</h4>
+                        <p class="subtitle">Acak pergerakan 8 arah sudut</p>
+                        <button class="btn-outline" id="btnRandom">Mulai Acak</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Kontrol Lontaran</h3>
+
+                    <div class="input-block">
+                        <label>Kecepatan Motor</label>
+                        <div class="counter-group">
+                            <button class="btn-counter" id="speedMinus">-</button>
+                            <input type="text" id="speedValue" class="counter-input" value="75%" readonly>
+                            <button class="btn-counter" id="speedPlus">+</button>
+                        </div>
+                    </div>
+
+                    <div class="input-block">
+                        <label>Interval Lontaran</label>
+                        <div class="counter-group">
+                            <button class="btn-counter" id="intervalMinus">-</button>
+                            <input type="text" id="intervalValue" class="counter-input" value="2 dtk" readonly>
+                            <button class="btn-counter" id="intervalPlus">+</button>
+                        </div>
+                    </div>  
+
+                    <button class="btn-black" id="btnStartLauncher">
+                        ▶ Mulai Pelontar
+                    </button>
+
+                    <div class="inner-card">
+                        <h4>Cek Histori Latihan</h4>
+                        <p class="subtitle">Cek histori latihan anda selama beberapa waktu ini</p>
+                        <button class="btn-outline" id="btn-to-history">Cek Histori Latihan</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Status Alat</h3>
+                    <div class="timer-card">
+                        <span class="timer-label">Lama Waktu</span>
+                        <span class="timer-value" id="timerDisplay">0 Menit</span>
+                    </div>
+                    <button class="btn-outline" id="btn-to-qos" style="width: 100%; margin: 15px 0;">
+                        Cek Status & QoS Jaringan
+                    </button>
+                    <button class="btn-danger" id="btnEmergency">BERHENTI DARURAT</button>
+                   <button class="btn-black" id="btnLogout" style="margin-top: 10px;">
+                        Keluar (Log Out)
+                   </button>               
+                </div>
+
+            </section>
+              
+            <!-- Untuk Histori -->
+            <section id="history-page" class="hidden">
+                <div class="card">
+                    <div class="history-nav">
+                        <button class="btn-back" id="btn-history-back">←</button>
+                        <h2>Histori Latihan</h2>
+                        <div class="status-badge-small">
+                            <span class="dot"></span>
+                        </div>
+                    </div>
+
+                    <!-- SUMMARY CARDS (Top Stats) -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">TOTAL SESI</span>
+                            <div class="stat-value">18 <span class="stat-unit">sesi</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">TOTAL DURASI</span>
+                            <div class="stat-value">4.2 <span class="stat-unit">jam</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">RATA-RATA</span>
+                            <div class="stat-value">14 <span class="stat-unit">mnt</span></div>
+                        </div>
+                    </div>
+
+                    <!-- DROPDOWN FILTER WAKTU -->
+                    <div class="select-wrapper filter-wrapper">
+                        <select id="timeFilter">
+                            <option>Semua Waktu (Bulan Ini)</option>
+                            <option>Minggu Ini</option>
+                            <option>Hari Ini</option>
+                        </select>
+                    </div>
+
+                    <h4 class="section-title">DAFTAR AKTIVITAS TERBARU</h4>
+
+                    <!-- LIST HISTORI -->
+                    <div class="history-list"></div>
+                </div>
+            </section>
+
+            <!-- Untuk QoS Jaringan -->
+            <section id="qos-page" class="hidden">
+                <div class="card">
+                    <div class="history-nav">
+                        <button class="btn-back" id="btn-qos-back">←</button>
+                        <h2>Quality of Service</h2>
+                        <div class="status-badge-small">
+                            <span class="dot"></span>
+                        </div>
+                    </div>
+
+                    <h4 class="section-title">PEMANTAUAN TERKINI</h4>
+
+                    <div class="history-list">
+                        <!-- QoS Overall -->
+                        <div class="history-card card-qos-overall">
+                            <div class="card-top">
+                                <div>
+                                    <div class="qos-metric-title">QoS Overall</div>
+                                    <div class="qos-status-label">⏱ Kualitas Jaringan : <strong>Sangat Baik</strong></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Latency -->
+                        <div class="history-card">
+                            <div class="card-top">
+                                <div>
+                                    <div class="qos-metric-title">Latency</div>
+                                    <div class="card-time">Latency Saat Ini</div>
+                                    <div class="qos-metric-value">90 ms</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Packet Loss -->
+                        <div class="history-card">
+                            <div class="card-top">
+                                <div>
+                                    <div class="qos-metric-title">Packet Loss</div>
+                                    <div class="card-time">Packet Loss Saat Ini</div>
+                                    <div class="qos-metric-value" id="qos-packet-loss">0%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bandwidth -->
+                        <div class="history-card">
+                            <div class="card-top">
+                                <div>
+                                    <div class="qos-metric-title">Bandwidth</div>
+                                    <div class="card-time">Bandwidth Saat Ini</div>
+                                    <div class="qos-metric-value">60 Kbps</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Jitter -->
+                        <div class="history-card">
+                            <div class="card-top">
+                                <div>
+                                    <div class="qos-metric-title">Jitter</div>
+                                    <div class="card-time">Jitter Signal Saat Ini</div>
+                                    <div class="qos-metric-value">60 ms</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lama Alat Berjalan -->
+                        <div class="history-card card-qos-duration">
+                            <div class="card-top">
+                                <div>
+                                    <div class="qos-metric-title">Lama Alat Berjalan</div>
+                                    <div class="qos-status-label">⏱ Durasi: <strong>25 menit</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="spinner"></div>
+            <p>Memuat Dashboard...</p>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
