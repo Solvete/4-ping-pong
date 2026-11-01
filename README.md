@@ -5,7 +5,7 @@ atau disebut juga **Ping-Pong-Machine** adalah proyek PBL kelompok 4 kelas TMJ 5
 **index.html** adalah file utama yang menampilkan seluruh antarmuka visual ke layar pengguna, mulai dari login, kontrol hingga pemantauan QoS.\
 **style.css** adalah file yang berfungsi untuk mempercantik tampilan visual dari index.html (berisikian warna, layout, ukuran font dll)
 
-# Authors
+# Contributors
 - [Arini](https://github.com/arinisalsa)
 - [Kayla](https://github.com/Solvete)
 - [Khairunnisa](https://github.com/Myssstique)
