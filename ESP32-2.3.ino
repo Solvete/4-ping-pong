@@ -3,9 +3,22 @@
 #include <esp_now.h>
 #include "esp_wifi.h"
 #include <string.h>
+#include <MyLD2410.h>
 
 //KAYLA_VARIABLES_START
 
+// -------------------- LD2410C --------------------
+HardwareSerial radarSerial(1);
+MyLD2410 radar(radarSerial);
+
+const int HUMAN_MIN_DISTANCE = 250;
+const int HUMAN_MAX_DISTANCE = 400;
+
+bool humanPresent = false;
+bool humanPause = false;
+unsigned long humanStateChangeAt = 0;
+
+const unsigned long HUMAN_LOST_TIMEOUT = 5000;
 // -------------------- Servo objects --------------------
 Servo stopperServo;
 Servo xServo;
@@ -17,10 +30,13 @@ const int ESTOP = 19;
 const int STOPPER_PIN = 21;
 const int X_PIN = 22;
 const int Y_PIN = 23;
+const int MOTOR_PWM_PIN = 17;
+const int LD_RX = 25;
+const int LD_TX = 26;
+
 
 // -------------------- Motor PWM configuration --------------------
-const int MOTOR_PWM_PIN = 17;
-const int PWM_FREQ = 20000;
+const int PWM_FREQ = 20000; //20khz
 const int PWM_RESOLUTION = 8;
 
 // PWM targets for each difficulty
@@ -34,6 +50,7 @@ const unsigned long RAMP_INTERVAL_MS = 50;
 
 int currentPWM = 0;
 int targetPWM = 0;
+int savedMotorTarget = 0;
 unsigned long lastRampTime = 0;
 
 // -------------------- Default servo positions --------------------
@@ -58,7 +75,6 @@ Difficulty currentMode = MODE_STOP;
 // -------------------- System states --------------------
 bool estopActive = true;
 bool stopperIsOpen = false;
-bool mediumGoingRight = true;
 
 // -------------------- Timing intervals --------------------
 unsigned long ballInterval = 3000;
@@ -86,11 +102,74 @@ esp_now_peer_info_t peerInfo = {};
 
 //KAYLA_VARIABLES_END
 
+//KAYLA_SENSOR_START
+void updateHumanPresence() {
+  radar.check();
+
+  bool detected = false;
+
+  if (radar.movingTargetDetected()) {
+    uint16_t distance = radar.movingTargetDistance();
+
+    if (distance >= HUMAN_MIN_DISTANCE &&
+        distance <= HUMAN_MAX_DISTANCE) {
+      detected = true;
+    }
+  }
+
+  if (radar.stationaryTargetDetected()) {
+    uint16_t distance = radar.stationaryTargetDistance();
+
+    if (distance >= HUMAN_MIN_DISTANCE &&
+        distance <= HUMAN_MAX_DISTANCE) {
+      detected = true;
+    }
+  }
+
+  humanPresent = detected;
+}
+
+void updateHumanSafety() {
+
+  if (estopActive) {
+    return;
+  }
+
+  if (!humanPresent && !humanPause) {
+    savedMotorTarget = targetPWM;
+    humanPause = true;
+
+    setMotorTarget(0);
+
+    stopperServo.write(STOPPER_CLOSED);
+    stopperIsOpen = false;
+    digitalWrite(GBOX, LOW);
+
+    Serial.println("MACHINE PAUSED.");
+  }
+
+  else if (humanPresent && humanPause) {
+    humanPause = false;
+
+    setMotorTarget(savedMotorTarget);
+    stopperServo.write(STOPPER_CLOSED);
+    stopperIsOpen = false;
+
+    lastBallTime = millis();
+    lastServoMove = millis();
+    digitalWrite(GBOX, HIGH);
+
+    Serial.println("MACHINE RESUMING.");
+  }
+}
+
+//KAYLA_SENSOR_END
+
 //KAYLA_SERVO_START
 
 // Control the ball stopper based on the selected interval
 void updateStopper() {
-  if (currentMode == MODE_STOP || estopActive) {
+  if (currentMode == MODE_STOP || estopActive || humanPause) {
     return;
   }
 
@@ -113,7 +192,7 @@ void updateStopper() {
 
 // Control X/Y servo orientation based on difficulty
 void updateOrientation() {
-  if (currentMode == MODE_STOP || estopActive) {
+  if (currentMode == MODE_STOP || estopActive || humanPause) {
     return;
   }
 
@@ -133,18 +212,16 @@ void updateOrientation() {
 
   else if (currentMode == MODE_MEDIUM) {
     // Medium: alternate horizontal direction only
-    int x = mediumGoingRight ? 120 : 60;
+    int x = random(45, 136);
 
     xServo.write(x);
     yServo.write(CENTER_Y);
-
-    mediumGoingRight = !mediumGoingRight;
   }
 
   else if (currentMode == MODE_HARD) {
     // Hard: randomize both horizontal and vertical positions
-    int x = random(30, 151);
-    int y = random(45, 136);
+    int x = random(45, 136);
+    int y = random(45, 90);
 
     xServo.write(x);
     yServo.write(y);
@@ -153,11 +230,11 @@ void updateOrientation() {
   else if (currentMode == MODE_CUSTOM) {
     // Custom: randomize only the enabled axes
     if (customRandomX) {
-      xServo.write(random(30, 151));
+      xServo.write(random(45, 136));
     }
 
     if (customRandomY) {
-      yServo.write(random(45, 136));
+      yServo.write(random(45, 90));
     }
   }
 }
@@ -165,22 +242,17 @@ void updateOrientation() {
 //KAYLA_SERVO_END
 
 //KAYLA_MOTOR_START
-
-// Set the desired PWM target without changing current PWM immediately
+// Set the PWM target without changing current PWM immediately
 void setMotorTarget(int pwm) {
   targetPWM = constrain(pwm, 0, 255);
 }
 
-
-// Immediately set the PWM output to zero
-// Used for emergency stopping
 void stopMotorImmediate() {
   currentPWM = 0;
   targetPWM = 0;
 
   analogWrite(MOTOR_PWM_PIN, 0);
 }
-
 
 // Gradually adjust the actual PWM toward its target
 void updateMotorPWM() {
@@ -228,7 +300,6 @@ void stopSystem() {
   Serial.println("Mode STOP. Motor ramping down.");
 }
 
-
 // Configure the machine according to the selected difficulty
 void setMode(Difficulty mode) {
   if (estopActive) {
@@ -253,7 +324,6 @@ void setMode(Difficulty mode) {
     case MODE_MEDIUM:
       ballInterval = 2000;
       servoInterval = 1500;
-      mediumGoingRight = true;
       setMotorTarget(MEDIUM_PWM);
       break;
 
@@ -324,7 +394,9 @@ void resetEStop() {
   Serial.println("Select EASY, MEDIUM, or HARD to start.");
 }
 
+//KAYLA_EMERGENCY_END
 
+//KAYLA_COMMAND_START
 // Read and process commands from the Serial Monitor
 void handleCommands() {
   if (!Serial.available()) {
@@ -443,8 +515,7 @@ void handleCommands() {
     );
   }
 }
-
-//KAYLA_EMERGENCY_END
+//KAYLA_COMMAND_END
 
 //KAYLA_ESPNOW_START
 
@@ -502,6 +573,19 @@ void cb_terima(
 
 void setup() {
   Serial.begin(115200);
+
+  // -------------------- LD2410C initialization --------------------
+
+  radarSerial.begin(256000, SERIAL_8N1, LD_RX, LD_TX);
+
+  delay(500);
+
+  if (!radar.begin()) {
+    Serial.println("LD2410C communication failed!");
+  }
+  else {
+    Serial.println("LD2410C READY.");
+  }
 
   // -------------------- Wi-Fi / ESP-NOW initialization --------------------
   WiFi.mode(WIFI_STA);
@@ -579,6 +663,8 @@ void setup() {
 
 void loop() {
   handleCommands();
+  updateHumanPresence();
+  updateHumanSafety();
   updateMotorPWM();
   updateStopper();
   updateOrientation();
