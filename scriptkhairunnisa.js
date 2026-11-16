@@ -7,9 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const $ = (id) => document.getElementById(id);
 
-    // =========================================================
-    // 1. MANAJEMEN HALAMAN (SPA NAVIGATION) - FRONTEND
-    // =========================================================
     const pages = [
         'login-page',
         'register-page',
@@ -36,14 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingOverlay = $('loading-overlay');
     const helpModal = $('help-modal');
 
-    // Elemen Sensor HLK Overlay
+    
     const hlkOverlay = $('hlk-overlay');
     const hlkStatusTitle = $('hlk-status-title');
     const hlkStatusDesc = $('hlk-status-desc');
     const hlkCountdownBox = $('hlk-countdown-box');
     const hlkTimerSpan = $('hlk-timer');
 
-    // State Variables (Status Lokal Frontend)
+    
     let currentSpeed = 75;
     let currentInterval = 2;
     let currentMode = 'custom';
@@ -57,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let machineUptimeSeconds = 0;
     let machineUptimeTimer = null;
 
-    // Pop-up Guide Troubleshooting
+    
     document.querySelectorAll('.help-trigger').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -75,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo(0, 0);
     }
 
-    // Auto Check Token Lokal
+
     const savedToken = localStorage.getItem('pingpong_token');
     if (savedToken) {
         showPage(controlPage);
@@ -84,9 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showPage(loginPage);
     }
 
-    // =========================================================
-    // 2. KONTROL MIKROKONTROLER (ESP32 API) - FRONTEND & HARDARE
-    // =========================================================
+
     async function sendApi(endpoint, method = 'POST', payload = {}) {
         try {
             const options = {
@@ -118,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Validasi & Pengunci Kontrol (UI Guarding)
     function guardEmergency() {
         if (isEmergencyActive) {
             alert('Matikan mode Berhenti Darurat terlebih dahulu untuk memulai kembali permainan!');
@@ -239,7 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
         await sendApi('/api/control/settings', 'POST', { speed: currentSpeed, interval: currentInterval });
     });
 
-    // Login & Navigation Event Listeners (Frontend Flow)
     $('btn-submit-login')?.addEventListener('click', (e) => {
         e.preventDefault();
         localStorage.setItem('pingpong_token', 'frontend_demo_token');
@@ -259,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showPage(loginPage);
     });
 
-    // Movement D-Pad Control
     const movementButtons = {
         btnUp: 'up', btnDown: 'down', btnLeft: 'left', btnRight: 'right',
         btnUpLeft: 'upleft', btnUpRight: 'upright', btnDownLeft: 'downleft', btnDownRight: 'downright'
@@ -298,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('touchend', stopMoving);
     });
 
-    // Start / Stop Launcher & Timer Uptime
     btnStart?.addEventListener('click', async () => {
         if (guardEmergency()) return;
 
@@ -329,7 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Emergency Stop Local Handler
     btnEmergency?.addEventListener('click', async () => {
         isEmergencyActive = !isEmergencyActive;
         if (isEmergencyActive) {
@@ -348,9 +338,6 @@ document.addEventListener('DOMContentLoaded', () => {
         await sendApi('/api/control/emergency', 'POST', {});
     });
 
-    // =========================================================
-    // 3. PENGUJIAN KUALITAS JARINGAN (QoS & TIPHON METRICS) - PERFORMA
-    // =========================================================
     function calculateTiphonQoS(latency, packetLoss, jitter) {
         let latencyScore = 4;
         if (latency > 450) latencyScore = 1;
@@ -394,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             throughputText = (data.throughput || data.bandwidth) ? `${data.throughput || data.bandwidth} Kbps` : '1024 Kbps';
             jitter = data.jitter !== undefined ? parseFloat(data.jitter) : 2.4;
         } catch (err) {
-            // Nilai Toleransi Simulasi saat Offline
+         
             latency = 90;
             packetLoss = 0.0;
             throughputText = "60 Kbps";
