@@ -1,0 +1,10 @@
+{
+  "mode": "beginner",
+  "speed": 50,
+  "interval": 3,
+  "horizontal_angle": 0,
+  "vertical_angle": 0,
+  "random_mode": false,
+  "machine_running": false,
+  "emergency_stop": false
+}
