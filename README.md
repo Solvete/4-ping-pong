@@ -74,9 +74,9 @@ Berikut merupakan penjelasan fungsi dari masing-masing file dalam repository:
 Proyek ini dikembangkan oleh Kelompok 4 TMJ 5A:
 
 - [Arini](https://github.com/arinisalsa) - Network Security
-- [Kayla](https://github.com/Solvete) - Network Infrastructure & IoT Engineer
-- [Khairunnisa](https://github.com/Myssstique) - Front End Development & QoS Analyst
-- [Siti](https://github.com/situyy) - Back End Development
+- [Kayla](https://github.com/Solvete) - Network Architect & IoT Engineer
+- [Khairunnisa](https://github.com/Myssstique) - Front-End Development & Network Performance Engineer
+- [Siti](https://github.com/situyy) - Back-End Development
 
 ## Project Information
 
