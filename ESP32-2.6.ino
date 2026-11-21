@@ -539,20 +539,19 @@ void cb_terima(const esp_now_recv_info_t *info, const uint8_t *dataDiterima, int
 
   memcpy(&data_ku, dataDiterima, sizeof(data_ku));
 
-  //Cek jika ini adalah Emergency Stop
   if (data_ku.isEmergency) {
-    emergencyStop();
-    Serial.println("\nESP2 - ESTOP Aktif");
+    if (!estopActive) {
+      estopActive = true;
+      emergencyStop();
+      Serial.println("\nESP2 - ESTOP Aktif");
+    }
     return;
   }else{
-    if(estopActive){
-    resetEStop();
-    Serial.println("\nESP2 - RESET ESTOP");
+    if (estopActive) {
+      estopActive = false;
+      resetEStop();
+      Serial.println("\nESP2 - RESET ESTOP");
     }
-  }
-
-  if (estopActive){
-    return;
   }
 
   //Tangani Normal Start / Stop biasa
